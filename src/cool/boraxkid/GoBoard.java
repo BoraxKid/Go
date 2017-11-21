@@ -9,10 +9,10 @@ import javafx.scene.transform.Translate;
 class GoBoard extends Pane {
     // default constructor for the class
     public GoBoard() {
-        this.horizontal = new Line[Go.GAME_BOARD_HEIGHT + 1];
-        this.vertical = new Line[Go.GAME_BOARD_WIDTH + 1];
-        this.horizontal_t = new Translate[Go.GAME_BOARD_HEIGHT + 1];
-        this.vertical_t = new Translate[Go.GAME_BOARD_WIDTH + 1];
+        this.horizontal = new Line[Go.GAME_BOARD_LINE_HEIGHT + 1];
+        this.vertical = new Line[Go.GAME_BOARD_LINE_WIDTH + 1];
+        this.horizontal_t = new Translate[Go.GAME_BOARD_LINE_HEIGHT + 1];
+        this.vertical_t = new Translate[Go.GAME_BOARD_LINE_WIDTH + 1];
         this.board = new GoPiece[Go.GAME_BOARD_WIDTH][Go.GAME_BOARD_HEIGHT];
         this.surrounding = new int[3][3];
         this.can_reverse = new boolean[3][3];
@@ -35,38 +35,41 @@ class GoBoard extends Pane {
         if (!this.in_play)
             return;
 
-        int cellX = (int)(x / this.cell_width);
-        int cellY = (int)(y / this.cell_height);
+        int cellX = (int)((x - this.start_x + (this.cell_width / 2.0)) / this.cell_width);
+        int cellY = (int)((y - this.start_y + (this.cell_height / 2.0)) / this.cell_height);
 
         if (!this.validCoords(cellX, cellY))
             return;
-        if (this.board[cellX][cellY].getPiece() != Go.GAME_EMPTY_SPACE)
-            return;
 
-        if (!this.determineReverse(cellX, cellY))
-            return;
-
-        this.placeAndReverse(cellX, cellY);
-
-        this.updateScores();
-
+        this.board[cellX][cellY].setPiece(this.current_player);
         this.swapPlayers();
+        // if (this.board[cellX][cellY].getPiece() != Go.GAME_EMPTY_SPACE)
+        //     return;
 
-        this.determineEndGame();
+        // if (!this.determineReverse(cellX, cellY))
+        //     return;
 
-        if (this.in_play) {
-            System.out.println("########################################");
-            System.out.println("Current scores:");
-            System.out.println("Player 1 (White): " + this.player1_score);
-            System.out.println("Player 2 (Black): " + this.player2_score);
-            System.out.println();
-            if (!this.canMove())
-                this.swapPlayers();
-            if (this.current_player == Go.GAME_WHITE_PLAYER)
-                System.out.println("Your turn player 1 (White)!");
-            if (this.current_player == Go.GAME_BLACK_PLAYER)
-                System.out.println("Your turn player 2 (Black)!");
-        }
+        // this.placeAndReverse(cellX, cellY);
+
+        // this.updateScores();
+
+        // this.swapPlayers();
+
+        // this.determineEndGame();
+
+        // if (this.in_play) {
+        //     System.out.println("########################################");
+        //     System.out.println("Current scores:");
+        //     System.out.println("Player 1 (White): " + this.player1_score);
+        //     System.out.println("Player 2 (Black): " + this.player2_score);
+        //     System.out.println();
+        //     if (!this.canMove())
+        //         this.swapPlayers();
+        //     if (this.current_player == Go.GAME_WHITE_PLAYER)
+        //         System.out.println("Your turn player 1 (White)!");
+        //     if (this.current_player == Go.GAME_BLACK_PLAYER)
+        //         System.out.println("Your turn player 2 (Black)!");
+        // }
     }
 
     // overridden version of the resize method to give the board the correct size
@@ -82,8 +85,8 @@ class GoBoard extends Pane {
         else
             newHeight = newWidth;
 
-        this.cell_width = newWidth / Go.GAME_BOARD_WIDTH;
-        this.cell_height = newHeight / Go.GAME_BOARD_HEIGHT;
+        this.cell_width = newWidth / Go.GAME_BOARD_LINE_WIDTH;
+        this.cell_height = newHeight / Go.GAME_BOARD_LINE_HEIGHT;
 
         this.start_x = (width / 2) - (newWidth / 2);
         this.start_y = (height / 2) - (newHeight / 2);
@@ -129,7 +132,7 @@ class GoBoard extends Pane {
         this.background.setFill(Go.GAME_BACKGROUND_COLOR);
         this.getChildren().add(this.background);
 
-        for (int i = 0; i < Go.GAME_BOARD_HEIGHT + 1; ++i) {
+        for (int i = 0; i < Go.GAME_BOARD_LINE_HEIGHT + 1; ++i) {
             this.horizontal[i] = new Line();
 
             this.horizontal[i].setStartX(0);
@@ -142,7 +145,7 @@ class GoBoard extends Pane {
             this.getChildren().add(this.horizontal[i]);
         }
 
-        for (int i = 0; i < Go.GAME_BOARD_WIDTH + 1; ++i) {
+        for (int i = 0; i < Go.GAME_BOARD_LINE_WIDTH + 1; ++i) {
             this.vertical[i] = new Line();
 
             this.vertical[i].setStartX(0);
@@ -158,7 +161,7 @@ class GoBoard extends Pane {
 
     // private method for resizing and relocating the horizontal lines
     private void horizontalResizeRelocate(final double width) {
-        for (int i = 0; i < Go.GAME_BOARD_HEIGHT + 1; ++i) {
+        for (int i = 0; i < Go.GAME_BOARD_LINE_HEIGHT + 1; ++i) {
             this.horizontal[i].setStartX(this.start_x);
             this.horizontal[i].setEndX(this.start_x + width);
             this.horizontal_t[i].setY(this.start_y + this.cell_height * i);
@@ -167,7 +170,7 @@ class GoBoard extends Pane {
 
     // private method for resizing and relocating the vertical lines
     private void verticalResizeRelocate(final double height) {
-        for (int i = 0; i < Go.GAME_BOARD_WIDTH + 1; ++i) {
+        for (int i = 0; i < Go.GAME_BOARD_LINE_WIDTH + 1; ++i) {
             this.vertical[i].setStartY(this.start_y);
             this.vertical[i].setEndY(this.start_y + height);
             this.vertical_t[i].setX(this.start_x + this.cell_width * i);
@@ -211,7 +214,7 @@ class GoBoard extends Pane {
         for (int i = 0; i < Go.GAME_BOARD_WIDTH; ++i) {
             for (int j = 0; j < Go.GAME_BOARD_HEIGHT; ++j) {
                 this.board[i][j].resize(cellX, cellY);
-                this.board[i][j].relocate(this.start_x + i * this.cell_width + offsetX, this.start_y + j * this.cell_height + offsetY);
+                this.board[i][j].relocate(this.start_x + i * this.cell_width + offsetX - this.cell_width / 2.0, this.start_y + j * this.cell_height + offsetY - this.cell_height / 2.0);
             }
         }
     }
