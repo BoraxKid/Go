@@ -49,8 +49,8 @@ public class Go extends Application {
     public static int GAME_BLACK_PLAYER = 2;
     public static int GAME_BOARD_LINE_WIDTH = 7;
     public static int GAME_BOARD_LINE_HEIGHT = 7;
-    public static int GAME_BOARD_WIDTH = 8;
-    public static int GAME_BOARD_HEIGHT = 8;
+    public static int GAME_BOARD_WIDTH = GAME_BOARD_LINE_WIDTH + 1;
+    public static int GAME_BOARD_HEIGHT = GAME_BOARD_LINE_HEIGHT + 1;
 
     // private fields for a stack pane and a Go control
     private StackPane sp_mainlayout;

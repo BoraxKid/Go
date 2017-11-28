@@ -105,10 +105,6 @@ class GoBoard extends Pane {
     // public method for resetting the game
     public void resetGame() {
         this.resetRenders();
-        this.board[3][3].setPiece(Go.GAME_WHITE_PLAYER);
-        this.board[4][4].setPiece(Go.GAME_WHITE_PLAYER);
-        this.board[3][4].setPiece(Go.GAME_BLACK_PLAYER);
-        this.board[4][3].setPiece(Go.GAME_BLACK_PLAYER);
 
         this.in_play = true;
         this.current_player = Go.GAME_BLACK_PLAYER;
