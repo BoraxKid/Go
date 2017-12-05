@@ -19,42 +19,20 @@ class GameLogic {
     }
 
     // public method that will try to place a piece in the given x,y coordinate
-    public void placePiece(final int cellX, final int cellY) {
+    public void placePiece(final int x, final int y) {
         if (!this.in_play)
             return;
 
-        if (!this.validCoords(cellX, cellY))
+        if (this.getPiece(x, y) != 0)
             return;
 
-        this.goBoard.pieces[cellX][cellY].setPiece(this.current_player);
+        System.out.println("liberties: " + this.countLiberties(x, y));
+
+        if (this.countLiberties(x, y) == 0)
+            return;
+
+        this.goBoard.pieces[x][y].setPiece(this.current_player);
         this.swapPlayers();
-        // if (this.board[cellX][cellY].getPiece() != Go.GAME_EMPTY_SPACE)
-        //     return;
-
-        // if (!this.determineReverse(cellX, cellY))
-        //     return;
-
-        // this.placeAndReverse(cellX, cellY);
-
-        // this.updateScores();
-
-        // this.swapPlayers();
-
-        // this.determineEndGame();
-
-        // if (this.in_play) {
-        //     System.out.println("########################################");
-        //     System.out.println("Current scores:");
-        //     System.out.println("Player 1 (White): " + this.player1_score);
-        //     System.out.println("Player 2 (Black): " + this.player2_score);
-        //     System.out.println();
-        //     if (!this.canMove())
-        //         this.swapPlayers();
-        //     if (this.current_player == Go.GAME_WHITE_PLAYER)
-        //         System.out.println("Your turn player 1 (White)!");
-        //     if (this.current_player == Go.GAME_BLACK_PLAYER)
-        //         System.out.println("Your turn player 2 (Black)!");
-        // }
     }
 
     // private method for swapping the players
@@ -116,8 +94,28 @@ class GameLogic {
         }
     }
 
-    private int countLiberties(final int x, final int y, final int color) {
-        return (0);
+    private int countLiberties(final int x, final int y) {
+        int liberties = 0;
+
+        if (this.getPiece(x - 1, y) == 0)
+            ++liberties;
+        if (this.getPiece(x + 1, y) == 0)
+            ++liberties;
+        if (this.getPiece(x, y - 1) == 0)
+            ++liberties;
+        if (this.getPiece(x, y + 1) == 0)
+            ++liberties;
+
+        // int tmp;
+        // if ((tmp = this.getPiece(x - 1, y)) == 0 || tmp == color)
+        //     ++liberties;
+        // if ((tmp = this.getPiece(x + 1, y)) == 0 || tmp == color)
+        //     ++liberties;
+        // if ((tmp = this.getPiece(x, y - 1)) == 0 || tmp == color)
+        //     ++liberties;
+        // if ((tmp = this.getPiece(x, y + 1)) == 0 || tmp == color)
+        //     ++liberties;
+        return (liberties);
     }
 
     // public method for resetting the game
