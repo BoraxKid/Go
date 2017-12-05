@@ -18,7 +18,7 @@ class GoControl extends Control {
 
         this.setOnKeyPressed((event) -> {
             if (event.getCode() == KeyCode.SPACE)
-                this.gb_board.resetGame();
+                this.gb_board.reset();
         });
     }
 
