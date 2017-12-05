@@ -28,9 +28,8 @@ class GameLogic {
 
         System.out.println("liberties: " + this.countLiberties(x, y));
 
-        if (this.countLiberties(x, y) == 0)
+        if (!this.isValidMove(x, y))
             return;
-
         this.goBoard.pieces[x][y].setPiece(this.current_player);
         this.swapPlayers();
     }
@@ -136,6 +135,14 @@ class GameLogic {
                 this.goBoard.pieces[i][j].setPiece(Go.GAME_EMPTY_SPACE);
             }
         }
+    }
+
+    public boolean isValidMove(int x, int y){
+        if(this.goBoard.pieces[x][y].getPiece() != Go.GAME_EMPTY_SPACE)
+            return (false);
+        if (this.countLiberties(x, y) <= 0)
+            return (false);
+        return (true);
     }
 
     private GoBoard goBoard;
