@@ -62,6 +62,13 @@ class GoBoard extends Pane {
         this.gameLogic.placePiece(cellX, cellY);
     }
 
+    public void rightClick(final double x, final double y) {
+        int cellX = (int)((x - this.start_x + (this.cell_width / 2.0)) / this.cell_width);
+        int cellY = (int)((y - this.start_y + (this.cell_height / 2.0)) / this.cell_height);
+
+        System.out.println("liberties: " + this.gameLogic.countLiberties(cellX, cellY));
+    }
+
     // private method that will initialise the background and the lines
     private void initialiseLinesBackground() {
         this.background = new Rectangle(Go.APPLICATION_WIDTH, Go.APPLICATION_HEIGHT);
@@ -132,6 +139,8 @@ class GoBoard extends Pane {
         for (int i = 0; i < Go.GAME_BOARD_WIDTH; ++i) {
             for (int j = 0; j < Go.GAME_BOARD_HEIGHT; ++j) {
                 this.pieces[i][j] = new GoPiece(Go.GAME_EMPTY_SPACE);
+                this.pieces[i][j].setX(i);
+                this.pieces[i][j].setY(j);
             }
             this.getChildren().addAll(this.pieces[i]);
         }

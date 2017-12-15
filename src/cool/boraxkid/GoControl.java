@@ -2,6 +2,7 @@ package cool.boraxkid;
 
 import javafx.scene.control.Control;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 
 //class definition for a custom Go control
 class GoControl extends Control {
@@ -13,7 +14,10 @@ class GoControl extends Control {
         this.getChildren().add(this.gb_board);
 
         this.setOnMouseClicked((event) -> {
-            this.gb_board.placePiece(event.getX(), event.getY());
+            if (event.getButton() == MouseButton.PRIMARY)
+                this.gb_board.placePiece(event.getX(), event.getY());
+            else if (event.getButton() == MouseButton.SECONDARY)
+                this.gb_board.rightClick(event.getX(), event.getY());
         });
 
         this.setOnKeyPressed((event) -> {

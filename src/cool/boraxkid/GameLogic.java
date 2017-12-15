@@ -1,5 +1,8 @@
 package cool.boraxkid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class GameLogic {
 
     public GameLogic(GoBoard goBoard) {
@@ -30,8 +33,61 @@ class GameLogic {
 
         if (!this.isValidMove(x, y))
             return;
+
         this.goBoard.pieces[x][y].setPiece(this.current_player);
+        this.hasCaptured = false;
+        this.checkCapture(x + 1, y, this.opposing);
+        this.checkCapture(x - 1, y, this.opposing);
+        this.checkCapture(x, y + 1, this.opposing);
+        this.checkCapture(x, y - 1, this.opposing);
         this.swapPlayers();
+    }
+
+    private void checkCapture(final int x, final int y, final int player) {
+        this.pieceChunk = new ArrayList<GoPiece>();
+        this.chunkHasLiberty = false;
+
+        if (this.getPiece(x, y) == player) {
+            this.pieceChunk.add(this.goBoard.pieces[x][y]);
+        }
+        for (int i = 0; i < this.pieceChunk.size(); ++i) {
+            this.checkPiece(this.pieceChunk.get(i).getX(), this.pieceChunk.get(i).getY(), player);
+        }
+
+        System.out.println(this.pieceChunk.size() + " l: " + this.chunkHasLiberty);
+
+        if (!this.chunkHasLiberty) {
+            for (GoPiece piece : this.pieceChunk) {
+                this.hasCaptured = true;
+                piece.setPiece(Go.GAME_EMPTY_SPACE);
+            }
+        }
+    }
+
+    private void checkPiece(final int x, final int y, final int player) {
+        if (!this.validCoords(x, y))
+            return;
+
+        if (this.checkPosition(x + 1, y, player))
+            this.chunkHasLiberty = true;
+        if (this.checkPosition(x - 1, y, player))
+            this.chunkHasLiberty = true;
+        if (this.checkPosition(x, y + 1, player))
+            this.chunkHasLiberty = true;
+        if (this.checkPosition(x, y - 1, player))
+            this.chunkHasLiberty = true;
+    }
+
+    private boolean checkPosition(final int x, final int y, final int player) {
+        if (!this.validCoords(x, y))
+            return (false);
+        int pieceType = this.getPiece(x, y);
+        GoPiece piece = this.goBoard.pieces[x][y];
+        if (pieceType == Go.GAME_EMPTY_SPACE)
+            return (true);
+        if (pieceType == player && !this.pieceChunk.contains(piece))
+            this.pieceChunk.add(piece);
+        return (false);
     }
 
     // private method for swapping the players
@@ -93,7 +149,7 @@ class GameLogic {
         }
     }
 
-    private int countLiberties(final int x, final int y) {
+    public int countLiberties(final int x, final int y) {
         int liberties = 0;
 
         if (this.getPiece(x - 1, y) == 0)
@@ -104,16 +160,6 @@ class GameLogic {
             ++liberties;
         if (this.getPiece(x, y + 1) == 0)
             ++liberties;
-
-        // int tmp;
-        // if ((tmp = this.getPiece(x - 1, y)) == 0 || tmp == color)
-        //     ++liberties;
-        // if ((tmp = this.getPiece(x + 1, y)) == 0 || tmp == color)
-        //     ++liberties;
-        // if ((tmp = this.getPiece(x, y - 1)) == 0 || tmp == color)
-        //     ++liberties;
-        // if ((tmp = this.getPiece(x, y + 1)) == 0 || tmp == color)
-        //     ++liberties;
         return (liberties);
     }
 
@@ -137,11 +183,33 @@ class GameLogic {
         }
     }
 
-    public boolean isValidMove(int x, int y){
-        if(this.goBoard.pieces[x][y].getPiece() != Go.GAME_EMPTY_SPACE)
+    public boolean isValidMove(int x, int y) {
+        if (this.goBoard.pieces[x][y].getPiece() != Go.GAME_EMPTY_SPACE)
             return (false);
         if (this.countLiberties(x, y) <= 0)
+        {
+            this.goBoard.pieces[x][y].setPiece(this.current_player);
+            this.hasCaptured = false;
+            this.checkCapture(x + 1, y, this.opposing);
+            this.checkCapture(x - 1, y, this.opposing);
+            this.checkCapture(x, y + 1, this.opposing);
+            this.checkCapture(x, y - 1, this.opposing);
+            this.goBoard.pieces[x][y].setPiece(Go.GAME_EMPTY_SPACE);
+            if (this.hasCaptured)
+                return (true);
+
+            int[] surroundPieces = new int[4];
+            surroundPieces[0] = this.getPiece(x + 1, y);
+            surroundPieces[1] = this.getPiece(x - 1, y);
+            surroundPieces[2] = this.getPiece(x, y + 1);
+            surroundPieces[3] = this.getPiece(x, y - 1);
+            if ((surroundPieces[0] == this.current_player || surroundPieces[0] == -1)
+            && (surroundPieces[1] == this.current_player || surroundPieces[1] == -1)
+            && (surroundPieces[2] == this.current_player || surroundPieces[2] == -1)
+            && (surroundPieces[3] == this.current_player || surroundPieces[3] == -1))
+                return (true);
             return (false);
+        }
         return (true);
     }
 
@@ -158,4 +226,7 @@ class GameLogic {
     private int[][] surrounding;
     // 3x3 array that determines if a reverse can be made in any direction
     private boolean[][] can_reverse;
+    private List<GoPiece> pieceChunk;
+    private boolean chunkHasLiberty;
+    private boolean hasCaptured;
 }

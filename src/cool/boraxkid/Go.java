@@ -47,6 +47,8 @@ public class Go extends Application {
     public static int GAME_EMPTY_SPACE = 0;
     public static int GAME_WHITE_PLAYER = 1;
     public static int GAME_BLACK_PLAYER = 2;
+    public static int GAME_CAPTURE_WHITE_PLAYER = 3;
+    public static int GAME_CAPTURE_BLACK_PLAYER = 4;
     public static int GAME_BOARD_LINE_WIDTH = 7;
     public static int GAME_BOARD_LINE_HEIGHT = 7;
     public static int GAME_BOARD_WIDTH = GAME_BOARD_LINE_WIDTH + 1;

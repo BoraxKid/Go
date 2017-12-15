@@ -46,7 +46,7 @@ class GoPiece extends Group {
     // method that will set the piece type
     public void setPiece(final int type) {
         this.player = type;
-        if (this.player == Go.GAME_EMPTY_SPACE)
+        if (this.player == Go.GAME_EMPTY_SPACE || this.player == Go.GAME_CAPTURE_WHITE_PLAYER || this.player == Go.GAME_CAPTURE_BLACK_PLAYER)
             this.piece.setFill(Color.TRANSPARENT);
         else
             this.piece.setFill(this.player == Go.GAME_WHITE_PLAYER ? Go.GAME_WHITE_COLOR : Go.GAME_BLACK_COLOR);
@@ -57,8 +57,26 @@ class GoPiece extends Group {
         return (this.player);
     }
 
+    public void setX(final int x) {
+        this.x = x;
+    }
+
+    public void setY(final int y) {
+        this.y = y;
+    }
+
+    public int getX() {
+        return (this.x);
+    }
+
+    public int getY() {
+        return (this.y);
+    }
+
     // private fields
     private int player;		// the player that this piece belongs to
     private Ellipse piece;	// ellipse representing the player's piece
     private Translate t;	// translation for the player piece
+    private int x;
+    private int y;
 }
