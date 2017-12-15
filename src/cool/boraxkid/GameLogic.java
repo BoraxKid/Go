@@ -44,6 +44,15 @@ class GameLogic {
     }
 
     private void checkCapture(final int x, final int y, final int player) {
+        if (!this.checkChunk(x, y, player)) {
+            for (GoPiece piece : this.pieceChunk) {
+                this.hasCaptured = true;
+                piece.setPiece(Go.GAME_EMPTY_SPACE);
+            }
+        }
+    }
+
+    private boolean checkChunk(final int x, final int y, final int player) {
         this.pieceChunk = new ArrayList<GoPiece>();
         this.chunkHasLiberty = false;
 
@@ -53,15 +62,7 @@ class GameLogic {
         for (int i = 0; i < this.pieceChunk.size(); ++i) {
             this.checkPiece(this.pieceChunk.get(i).getX(), this.pieceChunk.get(i).getY(), player);
         }
-
-        System.out.println(this.pieceChunk.size() + " l: " + this.chunkHasLiberty);
-
-        if (!this.chunkHasLiberty) {
-            for (GoPiece piece : this.pieceChunk) {
-                this.hasCaptured = true;
-                piece.setPiece(Go.GAME_EMPTY_SPACE);
-            }
-        }
+        return (this.chunkHasLiberty);
     }
 
     private void checkPiece(final int x, final int y, final int player) {
@@ -186,10 +187,9 @@ class GameLogic {
     public boolean isValidMove(int x, int y) {
         if (this.goBoard.pieces[x][y].getPiece() != Go.GAME_EMPTY_SPACE)
             return (false);
-        if (this.countLiberties(x, y) <= 0)
-        {
-            this.goBoard.pieces[x][y].setPiece(this.current_player);
+        if (this.countLiberties(x, y) <= 0) {
             this.hasCaptured = false;
+            this.goBoard.pieces[x][y].setPiece(this.current_player);
             this.checkCapture(x + 1, y, this.opposing);
             this.checkCapture(x - 1, y, this.opposing);
             this.checkCapture(x, y + 1, this.opposing);
@@ -198,15 +198,22 @@ class GameLogic {
             if (this.hasCaptured)
                 return (true);
 
+            this.goBoard.pieces[x][y].setPiece(this.current_player);
+            if (!this.checkChunk(x, y, this.current_player))
+            {
+                this.goBoard.pieces[x][y].setPiece(Go.GAME_EMPTY_SPACE);
+                return (false);
+            }
+
             int[] surroundPieces = new int[4];
             surroundPieces[0] = this.getPiece(x + 1, y);
             surroundPieces[1] = this.getPiece(x - 1, y);
             surroundPieces[2] = this.getPiece(x, y + 1);
             surroundPieces[3] = this.getPiece(x, y - 1);
             if ((surroundPieces[0] == this.current_player || surroundPieces[0] == -1)
-            && (surroundPieces[1] == this.current_player || surroundPieces[1] == -1)
-            && (surroundPieces[2] == this.current_player || surroundPieces[2] == -1)
-            && (surroundPieces[3] == this.current_player || surroundPieces[3] == -1))
+                    && (surroundPieces[1] == this.current_player || surroundPieces[1] == -1)
+                    && (surroundPieces[2] == this.current_player || surroundPieces[2] == -1)
+                    && (surroundPieces[3] == this.current_player || surroundPieces[3] == -1))
                 return (true);
             return (false);
         }
